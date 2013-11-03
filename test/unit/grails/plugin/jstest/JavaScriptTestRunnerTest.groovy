@@ -1,5 +1,5 @@
 package grails.plugin.jstest
-import org.junit.*
+import org.junit.Test
 
 class JavaScriptTestRunnerTest {
 	
