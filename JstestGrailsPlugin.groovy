@@ -1,6 +1,6 @@
 class JstestGrailsPlugin {
     def version = "0.2-SNAPSHOT"
-    def grailsVersion = "2.0 > *"
+    def grailsVersion = "2.3 > *"
     def dependsOn = [:]
     def pluginExcludes = [
         "grails-app/views/error.gsp"
@@ -22,6 +22,6 @@ class JstestGrailsPlugin {
 		[ name: "Ronny Løvtangen", email: "ronny@lovtangen.com" ],
 		[ name: "Fredrik Aubert", email: "fredrik.aubert@gmail.com" ]
 		]
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+    def issueManagement = [system: 'github', url: 'https://github.com/finnjohnsen/jstest/issues']
     def scm = [ url: "https://github.com/finnjohnsen/jstest" ]
 }

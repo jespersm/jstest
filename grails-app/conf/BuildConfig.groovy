@@ -15,7 +15,7 @@ grails.project.dependency.resolution = {
         grailsCentral()
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
-        //mavenCentral()
+        mavenCentral()
         //mavenLocal()
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
@@ -23,15 +23,15 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://repository.jboss.com/maven2/"
     }
     dependencies {
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
-		compile 'rhino:js:1.7R2'
-        // runtime 'mysql:mysql-connector-java:5.1.5'
+        compile ('rhino:js:1.7R2', 'junit:junit:4.11')
+        test "org.hamcrest:hamcrest-core:1.3" // Unreported dependency for JUnit 4, somehow (perhaps GGTS problem only)
     }
 
     plugins {
-        build(":tomcat:$grailsVersion",
-              ":release:1.0.0") {
+        build(":tomcat:7.0.42",
+              ":release:3.0.1") {
             export = false
         }
     }
 }
+
