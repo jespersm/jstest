@@ -49,7 +49,7 @@ class GrailsJavaScriptTestType extends GrailsTestTypeSupport {
 		int failCount = 0
 		for (File currentFile in files) {
 			String testName = JavaScriptTestNameResolver.resolveTestNameForFile(currentFile)
-			def description = new Description(testName)
+			def description = Description.createSuiteDescription(testName)
 			notifier.fireTestStarted(description)
 			JavaScriptTestRunner runner = new JavaScriptTestRunner()
 			if (!runner.runTest(currentFile.path)) { // Runs the JavaScript file in Rhino.
