@@ -75,6 +75,8 @@ class JavaScriptTestRunner {
             load(fileName, null)
         }
 		def load(String fileName, String encoding) {
+            if (! new File(fileName).exists()) throw new RuntimeException("File does not exist: $fileName")
+
             // FileReader broken by design
             FileReader scriptReader = encoding ? new InputStreamReader(new FileInputStream(fileName), encoding) : new FileReader(fileName)
             try {
@@ -84,9 +86,11 @@ class JavaScriptTestRunner {
             }
 		}
         def loadBuiltin(String fileName) {
-            // Assume that builtins are always just ASCII 
-            Reader scriptReader = new InputStreamReader(
-                this.getClass().getClassLoader().getResourceAsStream("grails/plugin/jstest/builtin/$fileName"), "US-ASCII")
+            // Assume that builtins are always just ASCII
+            InputStream is = this.getClass().getClassLoader().getResourceAsStream("grails/plugin/jstest/builtin/$fileName")
+            if (! is) throw new RuntimeException("No such builtin script: $fileName")
+            
+            Reader scriptReader = new InputStreamReader(is, "US-ASCII")
             try {
                 cx.evaluateReader(scope, scriptReader, fileName, 1, null)
             } finally {
