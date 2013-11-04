@@ -1,5 +1,7 @@
 package grails.plugin.jstest
 
+import java.io.FileInputStream;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory
 import org.mozilla.javascript.EvaluatorException;
@@ -31,7 +33,7 @@ class JavaScriptTestRunner {
 		lastException = null
 		output = ""
 		try {
-			Object result = cx.evaluateReader(scope, new FileReader(javaScriptFile), javaScriptFile, 1, null);
+			Object result = runJavascriptFile(cx, scope, javaScriptFile);
 			output = cx.toString(result)
 			if (output != "undefined") println output //not sure what the "undefined" is from, but it's unnecessary I think.
 			return true
@@ -41,26 +43,56 @@ class JavaScriptTestRunner {
 			println output
 			lastException = evalEx
 			return false
-		}catch (all) {
+		}catch (org.mozilla.javascript.RhinoException all) {
 			output += "JavaScript test fail at:\n"
 			String[] stack = all.getScriptStackTrace().split('at')
 			output += stack[stack.length-1] //this is the relevant line in the test.
 			lastException = all
 			println output
 			return false
-		}
+        }catch (other) {
+            output += "JavaScript test runtime exception:\n"
+            output += other.message
+            lastException = other
+            println output
+            return false
+        }
 	}
 	
 	def runJavascriptFile(Context cx, Scriptable scope, String fileName) {
-		return cx.evaluateReader(scope, new FileReader(fileName), fileName, 1, null);
+        FileReader scriptReader = new FileReader(fileName)
+        try {
+            return cx.evaluateReader(scope, scriptReader, fileName, 1, null);
+        } finally {
+            scriptReader.close()
+        }
 	}
 	
 	class Loader {
 		Context cx
 		Scriptable scope
-		def load(String fileName) {
-			cx.evaluateReader(scope, new FileReader(fileName), fileName, 1, null);
+        def load(String fileName) {
+            load(fileName, null)
+        }
+		def load(String fileName, String encoding) {
+            // FileReader broken by design
+            FileReader scriptReader = encoding ? new InputStreamReader(new FileInputStream(fileName), encoding) : new FileReader(fileName)
+            try {
+                cx.evaluateReader(scope, scriptReader, fileName, 1, null);
+            } finally {
+                scriptReader.close()
+            }
 		}
+        def loadBuiltin(String fileName) {
+            // Assume that builtins are always just ASCII 
+            Reader scriptReader = new InputStreamReader(
+                this.getClass().getClassLoader().getResourceAsStream("grails/plugin/jstest/builtin/$fileName"), "US-ASCII")
+            try {
+                cx.evaluateReader(scope, scriptReader, fileName, 1, null)
+            } finally {
+                scriptReader.close()
+            }
+        }
 		def println(String string) {
 			System.out.println(string);
 		}

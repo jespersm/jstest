@@ -1,4 +1,4 @@
-Loader.load('test/unit/js/qunit-boilerplate.js');
+Loader.loadBuiltin('js/lib/qunit-boilerplate.js');
 		
 module("JavaScriptTestRunner tests");
 
